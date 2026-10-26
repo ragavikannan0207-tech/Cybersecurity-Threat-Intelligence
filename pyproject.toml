@@ -1,0 +1,4 @@
+# Vercel Python runtime entrypoint configuration.
+# The Flask application instance is created in run.py as `app`.
+[tool.vercel]
+entrypoint = "run:app"
