@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Analyst workspace{% endblock %}
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s-3);margin-bottom:var(--s-5);">
+  <div>
+    <h1 style="font-size:1.6rem;margin:0 0 var(--s-1);">Analyst workspace</h1>
+    <p style="color:var(--text-muted);margin:0;">Review submitted reports, investigate and record assessments.</p>
+  </div>
+  <a class="btn btn-secondary" href="{{ url_for('threats.list_view') }}">Threat intelligence →</a>
+</div>
+
+<form method="get" class="toolbar">
+  <input class="input search" type="search" name="q" value="{{ search }}" placeholder="Search reports by id, indicator, description...">
+  <select class="select" name="status">
+    {% for s in statuses %}
+      <option value="{{ s }}" {% if s == status %}selected{% endif %}>{{ s }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-primary btn-sm" type="submit">Filter</button>
+  <a class="btn btn-ghost btn-sm" href="{{ url_for('analyst.dashboard') }}">Reset</a>
+</form>
+
+{% if reports %}
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Ref</th><th>Category</th><th>Indicator</th><th>Status</th><th>Submitted</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in reports %}
+      <tr>
+        <td class="mono">RPT-{{ "%06d"|format(r.report_id) }}</td>
+        <td>{{ r.threat_type }}</td>
+        <td class="mono">{{ r.indicator_value or "—" }}</td>
+        <td>
+          {% set cls = 'pending' if r.status=='Pending Review' else 'investigating' if r.status=='Under Investigation' else 'confirmed' if r.status=='Confirmed Threat' else 'unsubstantiated' if r.status=='Unsubstantiated' else 'closed' %}
+          <span class="badge badge-{{ cls }}">{{ r.status }}</span>
+        </td>
+        <td>{{ r.reported_at|fmt_dt }}</td>
+        <td><a class="btn btn-ghost btn-sm" href="{{ url_for('analyst.report_detail', report_id=r.report_id) }}">Open</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state"><h3>No reports found</h3><p>Try adjusting your filters.</p></div>
+{% endif %}
+
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination">
+  {% if pagination.has_prev %}<a href="{{ url_for('analyst.dashboard', page=pagination.prev_num, status=status, q=search) }}">Prev</a>{% endif %}
+  <span class="current">{{ pagination.page }} / {{ pagination.pages }}</span>
+  {% if pagination.has_next %}<a href="{{ url_for('analyst.dashboard', page=pagination.next_num, status=status, q=search) }}">Next</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

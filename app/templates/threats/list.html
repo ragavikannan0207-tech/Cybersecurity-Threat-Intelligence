@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Threat intelligence{% endblock %}
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s-3);margin-bottom:var(--s-5);">
+  <div>
+    <h1 style="font-size:1.6rem;margin:0 0 var(--s-1);">Threat intelligence</h1>
+    <p style="color:var(--text-muted);margin:0;">{{ total }} records in the database.</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('threats.new') }}">+ New threat</a>
+</div>
+
+<form method="get" class="toolbar">
+  <input class="input search" type="search" name="q" value="{{ search }}" placeholder="Search by name or indicator...">
+  <select class="select" name="type">
+    <option value="">All types</option>
+    {% for t in types %}<option value="{{ t }}" {% if t == threat_type %}selected{% endif %}>{{ t }}</option>{% endfor %}
+  </select>
+  <select class="select" name="sort">
+    <option value="date_desc" {% if sort=='date_desc' %}selected{% endif %}>Newest first</option>
+    <option value="date_asc" {% if sort=='date_asc' %}selected{% endif %}>Oldest first</option>
+    <option value="name_asc" {% if sort=='name_asc' %}selected{% endif %}>Name A–Z</option>
+    <option value="name_desc" {% if sort=='name_desc' %}selected{% endif %}>Name Z–A</option>
+  </select>
+  <button class="btn btn-primary btn-sm" type="submit">Filter</button>
+  <a class="btn btn-ghost btn-sm" href="{{ url_for('threats.list_view') }}">Reset</a>
+</form>
+
+{% if threats %}
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Ref</th><th>Name</th><th>Type</th><th>Severity</th><th>Indicator</th><th>Identified</th><th></th></tr></thead>
+    <tbody>
+      {% for t in threats %}
+      <tr>
+        <td class="mono">THR-{{ "%06d"|format(t.threat_id) }}</td>
+        <td>{{ t.threat_name }}</td>
+        <td>{{ t.threat_type }}</td>
+        <td class="sev-{{ t.severity|lower }}">{{ t.severity }}</td>
+        <td class="mono">{{ t.indicator_value or "—" }}</td>
+        <td>{{ t.date_identified|fmt_date }}</td>
+        <td><a class="btn btn-ghost btn-sm" href="{{ url_for('threats.detail', threat_id=t.threat_id) }}">Open</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state"><h3>No threats found</h3><p>Try adjusting your filters or create a new record.</p></div>
+{% endif %}
+
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination">
+  {% if pagination.has_prev %}<a href="{{ url_for('threats.list_view', page=pagination.prev_num, q=search, type=threat_type, sort=sort) }}">Prev</a>{% endif %}
+  <span class="current">{{ pagination.page }} / {{ pagination.pages }}</span>
+  {% if pagination.has_next %}<a href="{{ url_for('threats.list_view', page=pagination.next_num, q=search, type=threat_type, sort=sort) }}">Next</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

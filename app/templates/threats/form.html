@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if mode=='edit' else 'New' }} threat{% endblock %}
+{% block content %}
+<div class="card form-card" style="margin:0 auto;">
+  <h2 class="card-title">{{ 'Edit threat record' if mode=='edit' else 'New threat record' }}</h2>
+  <p class="card-subtitle">Threat intelligence records are managed by authorized analysts.</p>
+  <form method="post" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="threat_name">Threat name <span class="req">*</span></label>
+      {{ form.threat_name(class="input", id="threat_name") }}
+      {% if form.threat_name.errors %}<div class="field-error">{{ form.threat_name.errors[0] }}</div>{% endif %}
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="threat_type">Threat type <span class="req">*</span></label>
+        {{ form.threat_type(class="select", id="threat_type") }}
+        {% if form.threat_type.errors %}<div class="field-error">{{ form.threat_type.errors[0] }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="severity">Severity <span class="req">*</span></label>
+        {{ form.severity(class="select", id="severity") }}
+        {% if form.severity.errors %}<div class="field-error">{{ form.severity.errors[0] }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="indicator_value">Indicator value</label>
+      {{ form.indicator_value(class="input", id="indicator_value", placeholder="URL, IP, domain or hash") }}
+      {% if form.indicator_value.errors %}<div class="field-error">{{ form.indicator_value.errors[0] }}</div>{% endif %}
+      <div class="field-help">Must be unique across threat records.</div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="source">Source</label>
+        {{ form.source(class="input", id="source") }}
+        {% if form.source.errors %}<div class="field-error">{{ form.source.errors[0] }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="date_identified">Date identified</label>
+        {{ form.date_identified(class="input", id="date_identified") }}
+        {% if form.date_identified.errors %}<div class="field-error">{{ form.date_identified.errors[0] }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-primary") }}
+      {% if mode=='edit' and threat %}
+        <a class="btn btn-ghost" href="{{ url_for('threats.detail', threat_id=threat.threat_id) }}">Cancel</a>
+      {% else %}
+        <a class="btn btn-ghost" href="{{ url_for('threats.list_view') }}">Cancel</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

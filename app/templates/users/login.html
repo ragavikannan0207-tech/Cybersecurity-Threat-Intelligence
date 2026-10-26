@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Sign in to ThreatIntel{% endblock %}
+{% block content %}
+<div class="card form-card" style="margin: var(--s-10) auto;">
+  <h2 class="card-title">Sign in</h2>
+  <p class="card-subtitle">Access your ThreatIntel account to manage your reports.</p>
+  <form method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      <label for="email">Email address</label>
+      {{ form.email(class="input", id="email", autocomplete="email") }}
+      {% if form.email.errors %}<div class="field-error">{{ form.email.errors[0] }}</div>{% endif %}
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      {{ form.password(class="input", id="password", autocomplete="current-password") }}
+      {% if form.password.errors %}<div class="field-error">{{ form.password.errors[0] }}</div>{% endif %}
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-primary") }}
+      <a class="btn btn-ghost" href="{{ url_for('users.register') }}">Create an account</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

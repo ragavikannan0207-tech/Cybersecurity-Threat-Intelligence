@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Your ThreatIntel account{% endblock %}
+{% block content %}
+<div class="card" style="margin: var(--s-10) auto; max-width: 960px;">
+  <h2 class="card-title">Welcome, {{ user.full_name }}</h2>
+  <p class="card-subtitle">{{ user.email }}</p>
+  <div class="form-actions">
+    <a class="btn btn-primary" href="{{ url_for('reports.new_report') }}">Report a threat</a>
+    <a class="btn btn-ghost" href="{{ url_for('auth.login') }}">Analyst Login</a>
+    <form method="post" action="{{ url_for('users.logout') }}" style="display:inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-secondary" type="submit">Sign out</button>
+    </form>
+  </div>
+
+  <h3 style="margin-top: var(--s-8);">Your submitted reports</h3>
+  {% if reports %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Category</th>
+            <th>Indicator</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for r in reports %}
+          <tr>
+            <td class="mono">RPT-{{ "%06d"|format(r.report_id) }}</td>
+            <td>{{ r.threat_type }}</td>
+            <td>
+              {% if r.indicator_type or r.indicator_value %}
+                <span class="badge">{{ r.indicator_type or "Other" }}</span>
+                <span class="mono">{{ r.indicator_value or "—" }}</span>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td>{{ r.status }}</td>
+            <td>{{ r.reported_at.strftime('%Y-%m-%d %H:%M') if r.reported_at else '' }}</td>
+            <td>
+              <a class="btn btn-danger btn-sm" href="{{ url_for('users.delete_report', report_id=r.report_id) }}">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state"><p>You have not submitted any reports yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

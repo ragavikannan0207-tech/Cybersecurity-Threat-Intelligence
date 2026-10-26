@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Report RPT-{{ "%06d"|format(report.report_id) }}{% endblock %}
+{% block content %}
+<div style="margin-bottom:var(--s-4);">
+  <a class="btn btn-ghost btn-sm" href="{{ url_for('analyst.dashboard') }}">← Back to workspace</a>
+</div>
+
+<div class="detail-grid">
+  <div>
+    <div class="card" style="margin-bottom:var(--s-5);">
+      <h2 class="card-title">Report details</h2>
+      <div class="kv"><div class="k">Reference</div><div class="v mono">RPT-{{ "%06d"|format(report.report_id) }}</div></div>
+      <div class="kv"><div class="k">Threat category</div><div class="v">{{ report.threat_type }}</div></div>
+      <div class="kv"><div class="k">Indicator type</div><div class="v">{{ report.indicator_type or "—" }}</div></div>
+      <div class="kv"><div class="k">Indicator value</div><div class="v mono">{{ report.indicator_value or "—" }}</div></div>
+      <div class="kv"><div class="k">Source / context</div><div class="v">{{ report.source_context or "—" }}</div></div>
+      <div class="kv"><div class="k">Status</div><div class="v">
+        {% set cls = 'pending' if report.status=='Pending Review' else 'investigating' if report.status=='Under Investigation' else 'confirmed' if report.status=='Confirmed Threat' else 'unsubstantiated' if report.status=='Unsubstantiated' else 'closed' %}
+        <span class="badge badge-{{ cls }}">{{ report.status }}</span>
+      </div></div>
+      <div class="kv"><div class="k">Submitted</div><div class="v">{{ report.reported_at|fmt_dt }}</div></div>
+      <div class="kv"><div class="k">Last updated</div><div class="v">{{ report.updated_at|fmt_dt }}</div></div>
+      <div class="detail-block" style="margin-top:var(--s-4);">
+        <h3>Description</h3>
+        <p style="color:var(--text-muted);white-space:pre-wrap;">{{ report.description }}</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Potential matches (evidence only)</h2>
+      <p class="card-subtitle">Known threats sharing the same indicator. Matches are leads, not confirmation.</p>
+      {% if matches %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Threat</th><th>Type</th><th>Severity</th><th>Indicator</th><th>Source</th></tr></thead>
+          <tbody>
+            {% for m in matches %}
+            <tr>
+              <td><a href="{{ url_for('threats.detail', threat_id=m.threat_id) }}">THR-{{ "%06d"|format(m.threat_id) }}</a> {{ m.threat_name }}</td>
+              <td>{{ m.threat_type }}</td>
+              <td class="sev-{{ m.severity|lower }}">{{ m.severity }}</td>
+              <td class="mono">{{ m.indicator_value or "—" }}</td>
+              <td>{{ m.source or "—" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:var(--s-6);"><h3>No direct matches</h3><p>No known threat intelligence shares this indicator.</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div>
+    <div class="card" style="margin-bottom:var(--s-5);">
+      <h2 class="card-title">Investigation</h2>
+      <p class="card-subtitle">Record your assessment and notes.</p>
+      <form method="post" action="{{ url_for('analyst.investigate', report_id=report.report_id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+          <label for="assessment">Assessment</label>
+          {{ form.assessment(class="select", id="assessment") }}
+          {% if form.assessment.errors %}<div class="field-error">{{ form.assessment.errors[0] }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label for="investigation_notes">Notes</label>
+          {{ form.investigation_notes(class="textarea", id="investigation_notes") }}
+          {% if form.investigation_notes.errors %}<div class="field-error">{{ form.investigation_notes.errors[0] }}</div>{% endif %}
+        </div>
+        <button class="btn btn-primary" type="submit">Save investigation</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Audit trail</h2>
+      <p class="card-subtitle">Recent actions on this report.</p>
+      {% if audit_entries %}
+      <ul style="list-style:none;padding:0;margin:0;">
+        {% for a in audit_entries %}
+        <li style="padding:var(--s-3) 0;border-bottom:1px solid var(--border);">
+          <div style="font-size:0.85rem;color:var(--text);">{{ a.action }}</div>
+          <div style="font-size:0.78rem;color:var(--text-subtle);">{{ a.created_at|fmt_dt }}{% if a.analyst %} · {{ a.analyst.username }}{% endif %}</div>
+          {% if a.details %}<div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">{{ a.details }}</div>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="color:var(--text-muted);font-size:0.9rem;">No audit entries yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

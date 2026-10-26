@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}How it works{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <h2>How the platform works</h2>
+    <p>A clear separation between reported complaints and verified threat intelligence.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:var(--s-5);">
+    <h3 class="card-title">Reporting</h3>
+    <p class="card-subtitle">Anyone can submit a report about suspicious activity.</p>
+    <ul style="color:var(--text-muted);line-height:1.8;">
+      <li>Describe what happened and the suspected threat category.</li>
+      <li>Provide indicators such as URLs, IP addresses, domains or file hashes.</li>
+      <li>Add optional source context (email subject, website, message).</li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-bottom:var(--s-5);">
+    <h3 class="card-title">Matching (evidence, not proof)</h3>
+    <p class="card-subtitle">Submitted indicators are compared against the threat intelligence database.</p>
+    <ul style="color:var(--text-muted);line-height:1.8;">
+      <li>Matches are shown as potential leads to the reporter and analysts.</li>
+      <li>A match does not automatically confirm a threat or change report status.</li>
+      <li>Reports and verified threats remain separate records.</li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-bottom:var(--s-5);">
+    <h3 class="card-title">Investigation</h3>
+    <p class="card-subtitle">Authorized analysts review reports in a protected workspace.</p>
+    <ul style="color:var(--text-muted);line-height:1.8;">
+      <li>Analysts record an assessment: Pending Review, Under Investigation, Confirmed Threat, Unsubstantiated, or Closed.</li>
+      <li>Investigation notes and an audit trail are maintained for transparency.</li>
+      <li>No default analyst account is shipped with the application; accounts are created via a documented CLI command.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">Privacy and data</h3>
+    <p class="card-subtitle">Sample data uses documentation ranges (example.com, RFC 5737 IPs) and is labelled illustrative.</p>
+    <p style="color:var(--text-muted);">This platform is an educational project. Do not submit real personal data you are not authorized to share.</p>
+  </div>
+</section>
+{% endblock %}

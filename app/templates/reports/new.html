@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Report a threat{% endblock %}
+{% block content %}
+<div class="card form-card">
+  <h2 class="card-title">Report suspicious activity</h2>
+  <p class="card-subtitle">Your report helps security analysts investigate potential threats. Reports are not automatically verified.</p>
+  <p style="color:var(--text-muted);font-size:0.9rem;margin:0 0 var(--s-4);">
+    No account is required. Do not include your name or email. Reports are submitted to this educational platform for analyst review,
+    not automatically filed as official government or police complaints.
+  </p>
+  <form method="post" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="threat_type">Threat category <span class="req">*</span></label>
+      {{ form.threat_type(class="select", id="threat_type") }}
+      {% if form.threat_type.errors %}<div class="field-error">{{ form.threat_type.errors[0] }}</div>{% endif %}
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="indicator_type">Indicator type</label>
+        {{ form.indicator_type(class="select", id="indicator_type") }}
+        {% if form.indicator_type.errors %}<div class="field-error">{{ form.indicator_type.errors[0] }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="indicator_value">Indicator value</label>
+        {{ form.indicator_value(class="input", id="indicator_value", placeholder="URL, IP, domain or hash") }}
+        {% if form.indicator_value.errors %}<div class="field-error">{{ form.indicator_value.errors[0] }}</div>{% endif %}
+        <div class="field-help">Optional. Used to check against known threat indicators.</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="description">Description <span class="req">*</span></label>
+      {{ form.description(class="textarea", id="description", placeholder="Describe what happened, where you saw it, and any relevant details.") }}
+      {% if form.description.errors %}<div class="field-error">{{ form.description.errors[0] }}</div>{% endif %}
+    </div>
+    <div class="form-group">
+      <label for="source_context">Source / context</label>
+      {{ form.source_context(class="input", id="source_context", placeholder="e.g. email subject, website, message") }}
+      {% if form.source_context.errors %}<div class="field-error">{{ form.source_context.errors[0] }}</div>{% endif %}
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-primary") }}
+      <a class="btn btn-ghost" href="{{ url_for('public.index') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

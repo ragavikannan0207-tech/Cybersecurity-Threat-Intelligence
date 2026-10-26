@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Report submitted{% endblock %}
+{% block content %}
+<div class="card" style="max-width:760px;margin:0 auto;">
+  <div style="display:flex;align-items:center;gap:var(--s-3);margin-bottom:var(--s-4);">
+    <span style="width:44px;height:44px;border-radius:50%;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);display:grid;place-items:center;color:var(--success);"><svg width="22" height="22"><use href="#i-check"/></svg></span>
+    <div>
+      <h2 class="card-title" style="margin:0;">Report submitted</h2>
+      <p class="card-subtitle" style="margin:0;">Reference: <span class="mono">RPT-{{ "%06d"|format(report.report_id) }}</span></p>
+    </div>
+  </div>
+
+  <div class="kv"><div class="k">Threat category</div><div class="v">{{ report.threat_type }}</div></div>
+  <div class="kv"><div class="k">Indicator type</div><div class="v">{{ report.indicator_type or "—" }}</div></div>
+  <div class="kv"><div class="k">Indicator value</div><div class="v mono">{{ report.indicator_value or "—" }}</div></div>
+  <div class="kv"><div class="k">Status</div><div class="v"><span class="badge badge-pending">Pending Review</span></div></div>
+  <div class="kv"><div class="k">Submitted</div><div class="v">{{ report.reported_at|fmt_dt }}</div></div>
+
+  <h3 style="margin:var(--s-6) 0 var(--s-3);font-size:1rem;">Potential matches in threat intelligence</h3>
+  {% if matches %}
+    <p style="color:var(--text-muted);font-size:0.9rem;margin:0 0 var(--s-3);">
+      The following known threats share the same indicator. These are leads for analysts, not confirmation.
+    </p>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Threat</th><th>Type</th><th>Severity</th><th>Source</th></tr></thead>
+        <tbody>
+          {% for m in matches %}
+          <tr>
+            <td>{{ m.threat_name }}</td>
+            <td>{{ m.threat_type }}</td>
+            <td class="sev-{{ m.severity|lower }}">{{ m.severity }}</td>
+            <td>{{ m.source or "—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state" style="padding:var(--s-6);">
+      <h3>No direct matches found</h3>
+      <p>No known threat intelligence shares this indicator. Analysts will still review your report.</p>
+    </div>
+  {% endif %}
+
+  <div class="form-actions" style="margin-top:var(--s-6);">
+    <a class="btn btn-primary" href="{{ url_for('reports.new_report') }}">Submit another report</a>
+    <a class="btn btn-ghost" href="{{ url_for('public.index') }}">Home</a>
+  </div>
+</div>
+{% endblock %}

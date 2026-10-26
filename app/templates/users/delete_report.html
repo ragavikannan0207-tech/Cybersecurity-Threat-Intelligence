@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Delete report{% endblock %}
+{% block content %}
+<div class="card" style="margin: var(--s-10) auto; max-width: 720px;">
+  <h2 class="card-title">Delete report</h2>
+  <p class="card-subtitle">This action cannot be undone.</p>
+
+  <div class="kv"><div class="k">Reference</div><div class="v mono">RPT-{{ "%06d"|format(report.report_id) }}</div></div>
+  <div class="kv"><div class="k">Threat category</div><div class="v">{{ report.threat_type }}</div></div>
+  <div class="kv"><div class="k">Indicator type</div><div class="v">{{ report.indicator_type or "—" }}</div></div>
+  <div class="kv"><div class="k">Indicator value</div><div class="v mono">{{ report.indicator_value or "—" }}</div></div>
+  <div class="kv"><div class="k">Status</div><div class="v">{{ report.status }}</div></div>
+  <div class="kv"><div class="k">Submitted</div><div class="v">{{ report.reported_at.strftime('%Y-%m-%d %H:%M') if report.reported_at else '' }}</div></div>
+
+  <p style="margin-top: var(--s-6); color: var(--text-muted);">
+    Are you sure you want to permanently delete this report? Any analyst investigation
+    attached to it will also be removed. Audit log entries remain as historical records.
+  </p>
+
+  <form method="post" action="{{ url_for('users.delete_report', report_id=report.report_id) }}" style="margin-top: var(--s-4);">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-actions">
+      <button class="btn btn-danger" type="submit">Delete report</button>
+      <a class="btn btn-ghost" href="{{ url_for('users.profile') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

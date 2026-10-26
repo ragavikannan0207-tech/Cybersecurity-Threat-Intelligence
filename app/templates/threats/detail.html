@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Threat THR-{{ "%06d"|format(threat.threat_id) }}{% endblock %}
+{% block content %}
+<div style="margin-bottom:var(--s-4);">
+  <a class="btn btn-ghost btn-sm" href="{{ url_for('threats.list_view') }}">← Back to list</a>
+</div>
+
+<div class="detail-grid">
+  <div class="card">
+    <h2 class="card-title">{{ threat.threat_name }}</h2>
+    <p class="card-subtitle">{{ threat.threat_type }} · <span class="sev-{{ threat.severity|lower }}">{{ threat.severity }}</span></p>
+    <div class="kv"><div class="k">Reference</div><div class="v mono">THR-{{ "%06d"|format(threat.threat_id) }}</div></div>
+    <div class="kv"><div class="k">Threat type</div><div class="v">{{ threat.threat_type }}</div></div>
+    <div class="kv"><div class="k">Severity</div><div class="v sev-{{ threat.severity|lower }}">{{ threat.severity }}</div></div>
+    <div class="kv"><div class="k">Indicator value</div><div class="v mono">{{ threat.indicator_value or "—" }}</div></div>
+    <div class="kv"><div class="k">Source</div><div class="v">{{ threat.source or "—" }}</div></div>
+    <div class="kv"><div class="k">Date identified</div><div class="v">{{ threat.date_identified|fmt_date }}</div></div>
+    <div class="form-actions" style="margin-top:var(--s-6);">
+      <a class="btn btn-secondary" href="{{ url_for('threats.edit', threat_id=threat.threat_id) }}">Edit</a>
+      <form method="post" action="{{ url_for('threats.delete', threat_id=threat.threat_id) }}" onsubmit="return confirm('Delete this threat record? This cannot be undone.');" style="display:inline;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-danger" type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+  <div class="card">
+    <h3 class="card-title">Notes</h3>
+    <p style="color:var(--text-muted);font-size:0.9rem;">
+      Threat records are verified intelligence. Reports submitted by users are separate and must be investigated before any promotion.
+    </p>
+  </div>
+</div>
+{% endblock %}
