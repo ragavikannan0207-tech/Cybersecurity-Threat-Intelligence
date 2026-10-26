@@ -43,3 +43,4 @@ htmlcov/
 
 # Compiled migrations
 migrations/versions/__pycache__/
+.vercel

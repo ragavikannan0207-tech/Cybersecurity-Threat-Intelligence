@@ -1,4 +1,24 @@
-# Vercel Python runtime entrypoint configuration.
+# Vercel Python runtime project metadata and entrypoint configuration.
 # The Flask application instance is created in run.py as `app`.
+
+[project]
+name = "cybersecurity-threat-intelligence"
+version = "0.1.0"
+description = "Cybersecurity threat intelligence reporting application"
+requires-python = ">=3.10"
+dependencies = [
+    "Flask==3.0.3",
+    "Flask-SQLAlchemy==3.1.1",
+    "Flask-WTF==1.2.2",
+    "Flask-Migrate==4.0.7",
+    "python-dotenv==1.0.1",
+    "PyMySQL==1.1.1",
+    "Werkzeug==3.0.3",
+    "WTForms==3.1.2",
+    "email-validator==2.2.0",
+    "cryptography>=42.0.0",
+]
+
 [tool.vercel]
 entrypoint = "run:app"
+
